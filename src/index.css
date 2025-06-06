@@ -1,0 +1,335 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --animate-slide-in-right: slide-in-right 0.3s ease-out forwards;
+  --animate-slide-out-left: slide-out-left 0.3s ease-in forwards;
+  --animate-slide-in-left: slide-in-left 0.3s ease-out forwards;
+  --animate-slide-out-right: slide-out-right 0.3s ease-in forwards;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-pulse-slower: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-pulse-fast: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-shimmer: shimmer 3.5s linear infinite;
+  --animate-spin-angle: spinAngle 8s linear infinite;
+  
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-right {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-out-left {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-in-left {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-out-right {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  @keyframes pulse-fast { 
+    0%, 100% { 
+      opacity: 0.7; 
+    }
+    50% { 
+      opacity: 1; 
+    } 
+  }
+  @keyframes shimmer {
+    0% { 
+      background-position: 200% 0; 
+    }
+    100% { 
+      background-position: -200% 0; 
+    }
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+  }
+}
+
+
+@layer base {
+  /* For the main page spotlight effect - applied to .spotlight-container */
+  .spotlight-container {
+    position: relative;
+    /* --spotlight-x and --spotlight-y will be set by JavaScript */
+  }
+  .spotlight-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle 100px at var(--spotlight-x, 30%) var(--spotlight-y, 30%),
+      /* Using theme() for colors is good practice with v4 if colors are in @theme */
+      /* Or directly use HSL/RGB values if preferred */
+      hsl(var(--sky-500-hsl, 200 80% 55%) / 0.1), /* Example: sky-500 at 10% opacity */
+      transparent 80%
+    );
+    z-index: 0; 
+    pointer-events: none;
+    transition: background 0.2s ease-out; 
+  }
+  .hero-pattern-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Keep particles contained */
+    z-index: -1; /* Behind spotlight and content */
+  }
+
+  .hero-pattern-bg::before { /* For static dots if canvas is too much */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(hsl(var(--sky-700-hsl, 200 60% 30%) / 0.1) 1px, transparent 1px);
+    background-size: 20px 20px; /* Size of the dot grid */
+    opacity: 0.5;
+  }
+  
+  /* If you want a more dynamic particle effect, you'd use a canvas and JS library here.
+    For a pure CSS approach, we can animate some pseudo-elements or SVGs.
+    Let's try a simple CSS starfield/dot animation.
+  */
+  .star {
+    position: absolute;
+    background-color: hsl(var(--sky-300-hsl, 200 90% 75%) / 0.7); /* Light sky color for stars */
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+    will-change: transform, opacity; /* Performance hint */
+  }
+}
+
+@layer components {
+  .shimmer {
+    @apply animate-shimmer rounded-lg w-full h-auto
+    bg-[linear-gradient(90deg,_rgba(255,255,255,0.2)_0%,_rgba(255,255,255,0.5)_50%,_rgba(255,255,255,0.2)_100%)] bg-[length:200%_100%];
+  }
+
+  .glowing-card { /* This is for the dichotomy cards in "What is MBTI" section */
+    @apply relative overflow-hidden; /* Ensure overflow:hidden for the ::before */
+  }
+  .glowing-card::before {
+    @apply absolute left-0 top-0 w-full h-full rounded-lg opacity-0 transition-opacity duration-400 ease-in-out z-0;
+    content: '';
+    /* --mouse-x and --mouse-y are set by JS on these cards */
+    background: radial-gradient(
+      circle 300px at var(--mouse-x) var(--mouse-y), /* Increased size */
+      hsl(var(--cyan-400-hsl, 190 80% 55%)), /* Example: cyan-400 at 15% opacity */
+      transparent 70% /* Fade out quicker */
+    );
+    pointer-events: none;
+  }
+  .glowing-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .glowing-card-container {
+    @apply relative; /* Needed for the ::after pseudo-element */
+  }
+  .glowing-card-container::after {
+    content: "";
+    @apply absolute rounded-xl opacity-0 transition-opacity duration-300 ease-in-out z-0 animate-spin-angle;
+    inset: -2px; /* Control the "thickness" of the glow border */
+    background: conic-gradient(
+      from var(--gradient-angle, 0deg), 
+      hsl(var(--sky-600-hsl, 200 75% 50%) / 0.5), 
+      hsl(var(--cyan-500-hsl, 190 75% 50%) / 0.6), 
+      hsl(var(--teal-400-hsl, 170 65% 45%) / 0.5), 
+      hsl(var(--cyan-500-hsl, 190 75% 50%) / 0.6), 
+      hsl(var(--sky-600-hsl, 200 75% 50%) / 0.5)
+    );
+    filter: blur(10px); /* Adjust blur for desired glow intensity */
+    /* animation: spinAngle 8s linear infinite;  */
+    /* If you defined spinAngle directly as an animation utility: @apply animate-spin-angle; */
+    pointer-events: none; /* Ensure it doesn't block interactions */
+  }
+  .glowing-card-container:hover::after {
+    @apply opacity-75; /* Make it visible on hover */
+  }
+
+  /* --- Custom Scrollbar (Applied via  class) --- */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #00161d; /* slate-700 at 30% opacity */
+    /* border-radius: 10px; */
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--sky-500-hsl, 200 80% 55%) / 0.6); /* sky-500 at 60% opacity */
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--sky-400-hsl, 200 85% 60%)); /* sky-400 solid */
+  }
+}
+
+
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
