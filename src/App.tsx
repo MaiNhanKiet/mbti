@@ -1,19 +1,31 @@
-// src/App.tsx
+// src/App.tsx (or your main router file)
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
+import HomePage from './pages/Homepage';
+import MbtiLandingPage from './pages/MbtiLandingPage'; 
+import DiscLandingPage from './pages/DiscLandingPage'; 
 import MbtiTestPage from './pages/MbtiTestPage';
-import ResultsPage from './pages/ResultsPage';
-// ... other imports
+import MbtiResultsPage from './pages/MbtiResultsPage';
+import DiscTestPage from './pages/DiscTestPage'; 
+import DiscResultsPage from './pages/DiscResultPage'; 
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} /> 
-        <Route path="/test" element={<MbtiTestPage />} /> 
-        <Route path="/results/:mbtiType" element={<ResultsPage />} /> {/* Add this route */}
+        <Route path="/" element={<HomePage />} /> {/* New Homepage as root */}
+        
+        <Route path="/mbti" element={<MbtiLandingPage />} />
+        <Route path="/mbti/test" element={<MbtiTestPage />} />
+        <Route path="/mbti/results/:mbtiType" element={<MbtiResultsPage />} /> {/* Assuming results are under /mbti */}
+
+        <Route path="/disc" element={<DiscLandingPage />} />
+        <Route path="/disc/test" element={<DiscTestPage />} />
+        <Route path="/disc/results/:discProfile" element={<DiscResultsPage />} />
+
+        {/* Add other test routes here */}
       </Routes>
     </Router>
   );
 }
+
 export default App;

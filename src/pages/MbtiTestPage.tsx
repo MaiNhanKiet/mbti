@@ -80,7 +80,7 @@ const MbtiTestPage: React.FC = () => {
         }
     }, 300);
 
-  }, [currentQuestionIndex, questions.length]); // Added dependencies (triggerQuestionChange not needed as it's stable)
+  }, [currentQuestionIndex, questions.length]); 
 
   const selectedAnswerForCurrentQuestion = useMemo(() => {
     return currentQuestion ? answers[currentQuestion.id] : undefined;
@@ -105,7 +105,7 @@ const MbtiTestPage: React.FC = () => {
       TF: questions.filter(q=>q.options.some(o=>o.value==='T'||o.value==='F')).length,
       JP: questions.filter(q=>q.options.some(o=>o.value==='J'||o.value==='P')).length,
     };
-    navigate(`/results/${resultType}`, { state: { counts, questionsPerDimension, userAnswers: answers } });
+    navigate(`/mbti/results/${resultType}`, { state: { counts, questionsPerDimension, userAnswers: answers } });
   }, [answers, questions, navigate]);
 
   const triggerQuestionChange = (action: AnimationAction) => {
@@ -150,7 +150,7 @@ const MbtiTestPage: React.FC = () => {
     if (lastActionRef.current === 'next') return 'animate-slide-in-right';
     if (lastActionRef.current === 'prev') return 'animate-slide-in-left';
     return 'animate-fade-in';
-  }, [animateOutDirection, currentQuestionIndex]);
+  }, [animateOutDirection]);
 
 
   if (isLoading) {
@@ -306,7 +306,7 @@ const MbtiTestPage: React.FC = () => {
                         onClick={handlePreviousQuestion}
                         variant="outline"
                         size="lg"
-                        className="border-sky-500/40 text-sky-300 hover:bg-sky-500/10 hover:text-sky-200 hover:border-sky-500/70
+                        className="border-sky-500/40 text-sky-700 hover:bg-sky-500/10 hover:text-sky-200 hover:border-sky-500/70
                                 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent
                                 py-3 px-6 text-base sm:text-lg rounded-lg shadow-md"
                         disabled={currentQuestionIndex === 0 || !!animateOutDirection}

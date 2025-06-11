@@ -141,7 +141,7 @@ const LandingPage: React.FC = () => {
     };
   }, []);
 
-  const handleStartTest = () => navigate("/test");
+  const handleStartTest = () => navigate("/mbti/test");
 
   const dichotomyData = [
     {

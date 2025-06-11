@@ -1,4 +1,4 @@
-// src/pages/ResultsPage.tsx
+// src/pages/MbtiResultsPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { findMbtiTypeDetails } from '@/data/mbtiTypes';
@@ -90,7 +90,7 @@ const DichotomyStrengthDisplay: React.FC<DichotomyStrengthProps> = ({
 };
 
 
-const ResultsPage: React.FC = () => {
+const MbtiResultsPage: React.FC = () => {
   // ... (useState, useEffect, other logic from before - no changes needed here for the avatar itself)
   const { mbtiType } = useParams<{ mbtiType: string }>();
   const location = useLocation();
@@ -335,7 +335,7 @@ const ResultsPage: React.FC = () => {
                 asChild 
                 variant="outline" 
                 size="lg"
-                className="w-full sm:w-auto border-sky-500/80 text-sky-300 hover:bg-sky-700/40 hover:text-sky-100 hover:border-sky-400 text-lg font-semibold py-3.5 px-8 rounded-lg shadow-md hover:shadow-sky-500/30 transition-all duration-300 transform hover:scale-105"
+                className="w-full sm:w-auto border-sky-500/80 text-sky-700 hover:bg-sky-700/40 hover:text-sky-100 hover:border-sky-400 text-lg font-semibold py-3.5 px-8 rounded-lg shadow-md hover:shadow-sky-500/30 transition-all duration-300 transform hover:scale-105"
               >
                 <Link to="/">
                   <Home className="mr-2.5 h-5 w-5" /> Back to Homepage
@@ -353,4 +353,4 @@ const ResultsPage: React.FC = () => {
   );
 };
 
-export default ResultsPage;
+export default MbtiResultsPage;
